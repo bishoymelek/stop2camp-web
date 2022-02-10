@@ -41,6 +41,7 @@ export default function ProductCard({
   ratingCount,
   gallery,
   slug,
+  id,
   link,
   deviceType,
 }) {
@@ -58,7 +59,11 @@ export default function ProductCard({
       price={`$${price}/Night - Free Cancellation`}
       rating={<Rating rating={rating} ratingCount={ratingCount} type="bulk" />}
       viewDetailsBtn={
-        <Link href={`${link}/[slug]`} as={`${link}/${slug}`} prefetch={false}>
+        <Link
+          href={`${link}/[id]/[slug]`}
+          as={`${link}/${id}/${slug}`}
+          prefetch={false}
+        >
           <a>
             <FiExternalLink /> View Details
           </a>

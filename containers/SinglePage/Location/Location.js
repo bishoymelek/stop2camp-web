@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import Heading from 'components/UI/Heading/Heading';
 import Text from 'components/UI/Text/Text';
 import LocationWrapper from './Location.style';
-import Map from 'components/Map/Map';
+// import Map from 'components/Map/Map';
 import { Element } from 'react-scroll';
 
 const Location = ({
@@ -28,7 +28,7 @@ const Location = ({
         />
         <Text content="26 mins by car without traffic" {...contentStyle} /> */}
 
-        <Map location={location} multiple={false} />
+        {/* <Map location={location} multiple={false} /> */}
       </LocationWrapper>
     </Element>
   );

@@ -2,11 +2,7 @@ const FilterWarningsPlugin = require('webpack-filter-warnings-plugin');
 
 module.exports = {
   images: {
-    domains: [
-      's3.amazonaws.com',
-      'localhost',
-      'https://stop2camp.herokuapp.com',
-    ],
+    domains: ['s3.amazonaws.com', 'localhost', 'stop2camp.herokuapp.com'],
   },
   webpack: (config) => {
     // HOTFIX: https://github.com/webpack-contrib/mini-css-extract-plugin/issues/250

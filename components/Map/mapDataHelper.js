@@ -13,7 +13,7 @@ export function mapDataHelper(infoValue) {
         let id = '';
         let lat = '';
         let lng = '';
-        let formattedAddress = '';
+        let address = '';
         let city = '';
         let state_long = '';
         let state_short = '';
@@ -24,7 +24,7 @@ export function mapDataHelper(infoValue) {
         id = place_id;
         lat = location.lat();
         lng = location.lng();
-        formattedAddress = formatted_address;
+        address = formatted_address;
         if (address_components) {
           for (let i = 0; i < address_components.length; i++) {
             if (address_components[i].types.length) {
@@ -53,7 +53,7 @@ export function mapDataHelper(infoValue) {
         tempMapObj.id = id;
         tempMapObj.lat = lat;
         tempMapObj.lng = lng;
-        tempMapObj.formattedAddress = formattedAddress;
+        tempMapObj.address = address;
         tempMapObj.city = city;
         tempMapObj.state_short = state_short;
         tempMapObj.state_long = state_long;

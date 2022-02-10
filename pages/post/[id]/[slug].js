@@ -19,12 +19,18 @@ import SinglePageWrapper, {
   PostImage,
 } from 'containers/SinglePage/SinglePageView.style';
 import PostImageGallery from 'containers/SinglePage/ImageGallery/ImageGallery';
+import { client } from 'context/apollo-client';
+import { gql } from '@apollo/client';
 
-export default function SinglePostPage({ processedData, deviceType, query }) {
+export default function SinglePostPage({ deviceType, query, camp }) {
   const [href, setHref] = useState('');
   const [isModalShowing, setIsModalShowing] = useState(false);
-  if (isEmpty(processedData)) return <Loader />;
+
+  if (isEmpty(camp)) return <Loader />;
+
   const {
+    name,
+    about,
     reviews,
     rating,
     ratingCount,
@@ -35,7 +41,9 @@ export default function SinglePostPage({ processedData, deviceType, query }) {
     content,
     amenities,
     author,
-  } = processedData[0];
+    mapCoords,
+  } = camp;
+
   const pageTitle =
     query.slug.split('-').join(' ').charAt(0).toUpperCase() +
     query.slug.split('-').join(' ').slice(1);
@@ -53,12 +61,11 @@ export default function SinglePostPage({ processedData, deviceType, query }) {
       <SinglePageWrapper>
         <PostImage>
           <Image
-            src="/images/single-post-bg.jpg"
+            src={gallery[0].original}
             layout="fill"
             objectFit="cover"
             alt="Listing details banner"
           />
-
           <Button
             type="primary"
             onClick={() => setIsModalShowing(true)}
@@ -68,21 +75,22 @@ export default function SinglePostPage({ processedData, deviceType, query }) {
           </Button>
         </PostImage>
 
-        <TopBar title={title} shareURL={href} author={author} media={gallery} />
+        <TopBar title={name} shareURL={href} author={author} media={gallery} />
 
         <Container>
           <Row gutter={30} id="reviewSection" style={{ marginTop: 30 }}>
             <Col xl={16}>
               <Description
-                content={content}
+                content={about}
                 title={title}
                 location={location}
                 rating={rating}
                 ratingCount={ratingCount}
               />
-              <Amenities amenities={amenities} />
-              <Location location={processedData[0]} />
+              <Amenities list={amenities} />
+              <Location location={location} />
             </Col>
+
             <Col xl={8}>
               {deviceType === 'desktop' ? (
                 <Sticky
@@ -103,7 +111,7 @@ export default function SinglePostPage({ processedData, deviceType, query }) {
               )}
             </Col>
           </Row>
-          <Row gutter={30}>
+          {/*       <Row gutter={30}>
             <Col xl={16}>
               <Review
                 reviews={reviews}
@@ -112,7 +120,7 @@ export default function SinglePostPage({ processedData, deviceType, query }) {
               />
             </Col>
             <Col xl={8} />
-          </Row>
+          </Row>*/}
         </Container>
       </SinglePageWrapper>
 
@@ -128,7 +136,7 @@ export default function SinglePostPage({ processedData, deviceType, query }) {
         closable={false}
       >
         <>
-          <PostImageGallery />
+          <PostImageGallery gallery={gallery} />
           <Button
             onClick={() => setIsModalShowing(false)}
             className="image_gallery_close"
@@ -150,16 +158,80 @@ export default function SinglePostPage({ processedData, deviceType, query }) {
 
 export async function getServerSideProps(context) {
   const { req, query } = context;
-  const apiUrl = [
-    {
-      endpoint: 'hotel-single',
-      name: 'hotelSingleData',
-    },
-  ];
-  const pageData = await getAPIData(apiUrl);
-  const processedData = processAPIData(pageData);
+
   const deviceType = getDeviceType(req);
+
+  const { data } = await client.query({
+    query: gql`
+      query campDetails {
+        camp(id: "1") {
+          data {
+            id
+            attributes {
+              slug
+              name
+              about
+              contactPhone
+              contactEmail
+              gallery {
+                data {
+                  attributes {
+                    url
+                  }
+                }
+              }
+              amenities {
+                name
+                icon {
+                  data {
+                    attributes {
+                      url
+                    }
+                  }
+                }
+              }
+              location {
+                address
+                latitude
+                longitude
+                description
+              }
+            }
+          }
+        }
+      }
+    `,
+  });
+
   return {
-    props: { query, processedData, deviceType },
+    props: {
+      query,
+      deviceType,
+      camp: {
+        id: data.camp.data.id,
+        ...data.camp.data.attributes,
+        gallery: data.camp.data.attributes.gallery?.data?.map(
+          ({ attributes: imgAttributes }) => ({
+            ...imgAttributes,
+            original: 'http://localhost:1337' + imgAttributes.url,
+            // TODO: make it thumbnail
+            thumbnail: 'http://localhost:1337' + imgAttributes.url,
+          })
+        ),
+        amenities: data.camp.data.attributes.amenities?.map(
+          ({
+            name,
+            icon: {
+              data: {
+                attributes: { url },
+              },
+            },
+          }) => ({
+            name,
+            url: 'http://localhost:1337' + url,
+          })
+        ),
+      },
+    },
   };
 }

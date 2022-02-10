@@ -29,15 +29,15 @@ export default function Reservation({ linkStyle }) {
     <Card
       className="reservation_sidebar"
       header={<CardHeader />}
-      content={<RenderReservationForm />}
-      footer={
-        <p>
-          Special offers available.
-          <Link href="/#1">
-            <a style={{ ...linkStyle }}>See details</a>
-          </Link>
-        </p>
-      }
+      // content={<RenderReservationForm />}
+      // footer={
+      //   <p>
+      //     Special offers available.
+      //     <Link href="/#1">
+      //       <a style={{ ...linkStyle }}>See details</a>
+      //     </Link>
+      //   </p>
+      // }
     />
   );
 }

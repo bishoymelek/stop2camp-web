@@ -73,12 +73,12 @@ const LocationGrid = ({ data, deviceType }) => {
               sliderClass=""
               slidesToSlide={1}
             >
-              {data.map((post, index) => (
+              {data.map(({ name, backgroundImage }, index) => (
                 <ImageCard
                   key={index}
-                  imageSrc={post.locationImage.url}
-                  title={post.city}
-                  meta={`${post.numberOfPost} Hotels`}
+                  imageSrc={backgroundImage.url}
+                  title={name}
+                  // meta={`${post.numberOfPost} Hotels`}
                   link={LISTING_POSTS_PAGE}
                 />
               ))}

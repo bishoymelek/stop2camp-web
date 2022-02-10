@@ -24,10 +24,10 @@ const topBarMenu = [
     name: 'Location',
     target: 'location',
   },
-  {
-    name: 'Reviews',
-    target: 'reviews',
-  },
+  // {
+  //   name: 'Reviews',
+  //   target: 'reviews',
+  // },
 ];
 
 const SocialShareMenu = (props) => {

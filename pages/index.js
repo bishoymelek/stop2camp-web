@@ -6,6 +6,7 @@ import SectionTitle from 'components/SectionTitle/SectionTitle';
 import SearchArea from 'containers/Home/Search/Search';
 import LocationGrid from 'containers/Home/Location/Location';
 import SectionGrid from 'components/SectionGrid/SectionGrid';
+import { client } from 'context/apollo-client';
 import { getAPIData } from 'library/helpers/get-api-data';
 import { getDeviceType } from 'library/helpers/get-device-type';
 import { LISTING_POSTS_PAGE, SINGLE_POST_PAGE } from 'settings/constant';
@@ -15,13 +16,17 @@ import {
   HOME_PAGE_SECTIONS_ITEM_LIMIT_FOR_DESKTOP_DEVICE,
   HOME_PAGE_SECTIONS_COLUMNS_RESPONSIVE_WIDTH,
 } from 'settings/config';
+import { gql } from '@apollo/client';
 
 export default function HomePage({
   deviceType,
   locationData,
   topHotelData,
   luxaryHotelData,
+  camps,
+  cities,
 }) {
+  console.log(cities, camps);
   let limit;
 
   if (deviceType === 'mobile') {
@@ -40,9 +45,9 @@ export default function HomePage({
         <title>TripFinder. | React Hotel Listing Template</title>
       </Head>
       <SearchArea />
-      <LocationGrid data={locationData} deviceType={deviceType} />
+      <LocationGrid data={cities} deviceType={deviceType} />
       <Container fluid={true}>
-        <SectionTitle
+        {/* <SectionTitle
           title={<Heading content="Travelers’ Choice: Top hotels" />}
           link={
             <Link href={LISTING_POSTS_PAGE}>
@@ -56,9 +61,9 @@ export default function HomePage({
           data={topHotelData.slice(0, limit)}
           limit={limit}
           deviceType={deviceType}
-        />
+        /> */}
         <SectionTitle
-          title={<Heading content="Best Rated: Luxary hotels" />}
+          title={<Heading content="Camps World" />}
           link={
             <Link href={LISTING_POSTS_PAGE}>
               <a>Show all</a>
@@ -68,8 +73,8 @@ export default function HomePage({
         <SectionGrid
           link={SINGLE_POST_PAGE}
           columnWidth={HOME_PAGE_SECTIONS_COLUMNS_RESPONSIVE_WIDTH}
-          data={luxaryHotelData.slice(0, limit)}
-          limit={limit}
+          data={camps}
+          limit={10}
           deviceType={deviceType}
         />
       </Container>
@@ -88,17 +93,14 @@ export async function getServerSideProps(context) {
       endpoint: 'top-hotel',
       name: 'topHotelData',
     },
-    {
-      endpoint: 'location',
-      name: 'locationData',
-    },
   ];
+
   const deviceType = getDeviceType(req);
   const pageData = await getAPIData(apiUrl);
   let locationData = [],
     topHotelData = [],
     luxaryHotelData = [];
-  // console.log(pageData);
+
   if (pageData) {
     pageData.forEach((item, key) => {
       if (item.name === 'locationData') {
@@ -110,7 +112,86 @@ export async function getServerSideProps(context) {
       }
     });
   }
+  const { data } = await client.query({
+    query: gql`
+      query CampsAndCities {
+        camps {
+          data {
+            id
+            attributes {
+              slug
+              name
+              contactPhone
+              contactEmail
+              address
+              gallery {
+                data {
+                  attributes {
+                    url
+                  }
+                }
+              }
+            }
+          }
+        }
+        cities {
+          data {
+            id
+            attributes {
+              name
+              backgroundImage {
+                data {
+                  attributes {
+                    url
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    `,
+  });
+
   return {
-    props: { deviceType, locationData, topHotelData, luxaryHotelData },
+    props: {
+      deviceType,
+      locationData,
+      topHotelData,
+      luxaryHotelData,
+      camps: data.camps?.data?.map(
+        ({
+          id,
+          attributes: {
+            slug,
+            name,
+            address,
+            contactEmail,
+            contactPhone,
+            gallery,
+          },
+        }) => ({
+          id,
+          slug,
+          name,
+          address,
+          contactEmail,
+          contactPhone,
+          gallery: gallery?.data?.map(({ attributes: imgAttributes }) => ({
+            ...imgAttributes,
+            url: 'http://localhost:1337' + imgAttributes.url,
+          })),
+        })
+      ),
+      cities: data.cities?.data?.map(
+        ({ id, attributes: { name, backgroundImage } }) => ({
+          id,
+          name,
+          backgroundImage: {
+            url: 'http://localhost:1337' + backgroundImage.data.attributes.url,
+          },
+        })
+      ),
+    },
   };
 }

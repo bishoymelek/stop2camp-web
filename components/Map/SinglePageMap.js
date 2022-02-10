@@ -15,12 +15,12 @@ const SingleMapDisplay = ({ location }) => {
   };
 
   hotelData.push({
-    lat: location?.location.lat,
-    lng: location?.location.lng,
+    lat: location?.latitude,
+    lng: location?.longitude,
     id: location?.id,
     title: location?.title,
-    thumbUrl: location?.image.thumb_url,
-    formattedAddress: location?.location.formattedAddress,
+    thumbUrl: location?.image?.thumb_url,
+    address: location?.address,
     price: location?.price,
     rating: location?.rating,
     ratingCount: location?.ratingCount,

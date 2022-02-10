@@ -52,15 +52,15 @@ export default function SectionGrid({
     <>
       <Box className="grid_wrapper" {...rowStyle}>
         {data && data.length
-          ? data.map((item) => {
+          ? data.map((camp) => {
               return (
                 <Box
                   className="grid_column"
                   width={columnWidth}
-                  key={item.id}
+                  key={camp.id}
                   {...columnStyle}
                 >
-                  <ProductCard link={link} {...item} />
+                  <ProductCard link={link} {...camp} />
                 </Box>
               );
             })

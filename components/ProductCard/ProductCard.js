@@ -34,9 +34,9 @@ const responsive = {
   },
 };
 export default function ProductCard({
-  title,
+  name,
   rating,
-  location,
+  address,
   price,
   ratingCount,
   gallery,
@@ -53,8 +53,8 @@ export default function ProductCard({
           }}
         />
       }
-      location={location.formattedAddress}
-      title={title}
+      location={address}
+      title={name}
       price={`$${price}/Night - Free Cancellation`}
       rating={<Rating rating={rating} ratingCount={ratingCount} type="bulk" />}
       viewDetailsBtn={
@@ -83,11 +83,11 @@ export default function ProductCard({
         sliderClass=""
         slidesToSlide={1}
       >
-        {gallery.map(({ url, title }, index) => (
+        {gallery.map(({ url }, index) => (
           <Image
             key={index}
             src={url}
-            alt={title}
+            // alt={title}
             layout="fill"
             objectFit="cover"
           />

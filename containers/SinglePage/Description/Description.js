@@ -22,15 +22,15 @@ const Description = ({
   return (
     <Element name="overview" className="overview">
       <DescriptionWrapper>
-        <Text content={location.formattedAddress} {...locationMetaStyle} />
+        {/* <Text content={location.address} {...locationMetaStyle} />
         <Heading as="h2" content={title} {...titleStyle} />
         <RatingMeta>
           <Rating rating={rating} ratingCount={ratingCount} type="bulk" />
-        </RatingMeta>
+        </RatingMeta>*/}
         <Text content={content} {...contentStyle} />
-        <TextButton>
+        {/* <TextButton>
           <Button>Read more about the hotel</Button>
-        </TextButton>
+        </TextButton>  */}
       </DescriptionWrapper>
     </Element>
   );

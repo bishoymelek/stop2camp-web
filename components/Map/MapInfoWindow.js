@@ -14,7 +14,7 @@ const MapInfoWindow = ({ data, onCloseClick }) => {
     >
       <GridCard
         className="info_window_card"
-        location={data?.formattedAddress}
+        location={data?.address}
         title={data?.title}
         price={`$${data?.price}/Night - Free Cancellation`}
         rating={

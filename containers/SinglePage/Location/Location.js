@@ -14,25 +14,19 @@ const Location = ({
   linkStyle,
   location,
 }) => {
-  const formattedAddress = location.formattedAddress;
+  const address = location.address;
   return (
     <Element name="location" className="location">
       <LocationWrapper>
         <Heading as="h2" content="Location" {...titleStyle} />
-        <Text content={formattedAddress} {...locationMetaStyle} />
-        <Text
-          content="Take an easy walk to the main historic sites of the city. The
-          neighborhood is perfect for an authentic taste of Roman life, with
-          shops, art galleries, restaurants, bars, and clubs all nearby and
-          ready to be discovered."
-          {...contentStyle}
-        />
-        <Text
+        <Text content={address} {...locationMetaStyle} />
+        <Text content={location?.description} {...contentStyle} />
+        {/* <Text
           content="Distance from Leonardo da Vinci International Airport"
           {...contentStyle}
           {...boldContentStyle}
         />
-        <Text content="26 mins by car without traffic" {...contentStyle} />
+        <Text content="26 mins by car without traffic" {...contentStyle} /> */}
 
         <Map location={location} multiple={false} />
       </LocationWrapper>

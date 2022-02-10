@@ -213,9 +213,9 @@ export async function getServerSideProps(context) {
         gallery: data.camp.data.attributes.gallery?.data?.map(
           ({ attributes: imgAttributes }) => ({
             ...imgAttributes,
-            original: 'http://localhost:1337' + imgAttributes.url,
+            original: process.env.NEXT_PUBLIC_SERVER_API + imgAttributes.url,
             // TODO: make it thumbnail
-            thumbnail: 'http://localhost:1337' + imgAttributes.url,
+            thumbnail: process.env.NEXT_PUBLIC_SERVER_API + imgAttributes.url,
           })
         ),
         amenities: data.camp.data.attributes.amenities?.map(
@@ -228,7 +228,7 @@ export async function getServerSideProps(context) {
             },
           }) => ({
             name,
-            url: 'http://localhost:1337' + url,
+            url: process.env.NEXT_PUBLIC_SERVER_API + url,
           })
         ),
       },

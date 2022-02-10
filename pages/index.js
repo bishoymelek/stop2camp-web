@@ -18,27 +18,17 @@ import {
 } from 'settings/config';
 import { gql } from '@apollo/client';
 
-export default function HomePage({
-  deviceType,
-  locationData,
-  topHotelData,
-  luxaryHotelData,
-  camps,
-  cities,
-}) {
-  console.log(cities, camps);
+export default function HomePage({ deviceType, camps, cities }) {
   let limit;
 
   if (deviceType === 'mobile') {
     limit = HOME_PAGE_SECTIONS_ITEM_LIMIT_FOR_MOBILE_DEVICE;
-  }
-  if (deviceType === 'tablet') {
+  } else if (deviceType === 'tablet') {
     limit = HOME_PAGE_SECTIONS_ITEM_LIMIT_FOR_TABLET_DEVICE;
-  }
-
-  if (deviceType === 'desktop') {
+  } else if (deviceType === 'desktop') {
     limit = HOME_PAGE_SECTIONS_ITEM_LIMIT_FOR_DESKTOP_DEVICE;
   }
+
   return (
     <>
       <Head>
@@ -84,34 +74,9 @@ export default function HomePage({
 
 export async function getServerSideProps(context) {
   const { req } = context;
-  const apiUrl = [
-    {
-      endpoint: 'hotel',
-      name: 'luxaryHotelData',
-    },
-    {
-      endpoint: 'top-hotel',
-      name: 'topHotelData',
-    },
-  ];
 
   const deviceType = getDeviceType(req);
-  const pageData = await getAPIData(apiUrl);
-  let locationData = [],
-    topHotelData = [],
-    luxaryHotelData = [];
 
-  if (pageData) {
-    pageData.forEach((item, key) => {
-      if (item.name === 'locationData') {
-        locationData = item.data ? [...item.data] : [];
-      } else if (item.name === 'topHotelData') {
-        topHotelData = item.data ? [...item.data] : [];
-      } else if (item.name === 'luxaryHotelData') {
-        luxaryHotelData = item.data ? [...item.data] : [];
-      }
-    });
-  }
   const { data } = await client.query({
     query: gql`
       query CampsAndCities {
@@ -121,9 +86,13 @@ export async function getServerSideProps(context) {
             attributes {
               slug
               name
-              contactPhone
               contactEmail
-              address
+              contactPhone
+              location {
+                address
+                latitude
+                longitude
+              }
               gallery {
                 data {
                   attributes {
@@ -156,39 +125,41 @@ export async function getServerSideProps(context) {
   return {
     props: {
       deviceType,
-      locationData,
-      topHotelData,
-      luxaryHotelData,
       camps: data.camps?.data?.map(
         ({
           id,
           attributes: {
             slug,
             name,
-            address,
+            location,
             contactEmail,
             contactPhone,
             gallery,
+            amenities,
           },
-        }) => ({
-          id,
-          slug,
-          name,
-          address,
-          contactEmail,
-          contactPhone,
-          gallery: gallery?.data?.map(({ attributes: imgAttributes }) => ({
-            ...imgAttributes,
-            url: 'http://localhost:1337' + imgAttributes.url,
-          })),
-        })
+        }) => {
+          return {
+            id,
+            slug,
+            name,
+            location,
+            contactEmail,
+            contactPhone,
+            gallery: gallery?.data?.map(({ attributes: imgAttributes }) => ({
+              ...imgAttributes,
+              url: process.env.NEXT_PUBLIC_SERVER_API + imgAttributes.url,
+            })),
+          };
+        }
       ),
       cities: data.cities?.data?.map(
         ({ id, attributes: { name, backgroundImage } }) => ({
           id,
           name,
           backgroundImage: {
-            url: 'http://localhost:1337' + backgroundImage.data.attributes.url,
+            url:
+              process.env.NEXT_PUBLIC_SERVER_API +
+              backgroundImage.data.attributes.url,
           },
         })
       ),
